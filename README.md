@@ -1,4 +1,4 @@
-# AVSegs KITTI Extension
+# PSegs KITTI Extension
 
 [![License: CC BY-NC-SA 3.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%203.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/3.0/)
 
@@ -7,6 +7,6 @@ This project contains code and data related to the
 licensed the same as KITTI.
 
 See:
- * 
+ *
 
 
