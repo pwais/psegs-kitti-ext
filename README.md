@@ -34,6 +34,63 @@ exclusively from the publicly available Raw Sync Data.  For the `test` splits, w
  * It is unknown how correlated the `test` and `train` splits are; we can't determine if they were
     recorded on the same days.
 
+#### There Are Missing Velodyne Scans
+The Object Benchmark appear to have 100% Velodyne coverage, but the Tracking Benchmark is missing
+4 Velodyne scans.  Be sure you either drop these frames or make your training pipeline robust
+to missing data.  
+```
++--------------------------+--------+-----+
+|benchmark                 |topic   |num  |
++--------------------------+--------+-----+
+|data_object_image_2.zip   |image_02|14999|
+|data_object_velodyne.zip  |velodyne|14999|
+|data_tracking_image_2.zip |image_02|19103|
+|data_tracking_velodyne.zip|velodyne|19099|
++--------------------------+--------+-----+
+```
+
+#### Sensor Sample Rates are Consistently 10Hz
+The camera-lidar delay is a fairly consistent ~6ms, and sensors are synchronized at 10Hz
+consistently across all Tracking Benchmark segments.  Here's a sample:
+
+```
+Segment 2011_09_26_drive_0028_sync
+Start 2011-09-26 13:22:48 	Duration 44.445416223 sec
+Num Images 430 (Lidars 430)
+            Series   Freq Hz  Diff img (msec)  std (msec)   Duration  Support
+0         image_00  9.655935         6.474308    0.678468  44.428635      430
+1         image_01  9.655925         6.392096    0.660889  44.428678      430
+2         image_02  9.655940         0.000000    0.000000  44.428613      430
+3         image_03  9.655937         0.555579    0.096519  44.428622      430
+4             oxts  9.655230         6.653511    3.385045  44.431878      430
+5  velodyne_points  9.655946        10.507161    0.138202  44.428582      430
+
+Segment 2011_09_26_drive_0064_sync
+Start 2011-09-26 14:38:23 	Duration 58.865393697 sec
+Num Images 570 (Lidars 570)
+            Series   Freq Hz  Diff img (msec)  std (msec)   Duration  Support
+0         image_00  9.668892         6.536892    0.794485  58.848523      570
+1         image_01  9.668857         6.396500    0.656120  58.848734      570
+2         image_02  9.668954         0.000000    0.000000  58.848144      570
+3         image_03  9.668933         0.541377    0.065483  58.848272      570
+4             oxts  9.669516         6.597285    3.088882  58.844726      570
+5  velodyne_points  9.668951        10.471518    0.157921  58.848163      570
+```
+
+Here's a segment with missing velodyne scans:
+```
+Segment 2011_09_26_drive_0009_sync
+Start 2011-09-26 13:08:24 	Duration 46.184051925000006 sec
+Num Images 447 (Lidars 443)
+            Series       Freq Hz  Diff img (msec)    std (msec)      Duration  Support
+0         image_00  9.660596e+00     6.480731e+00  6.871421e-01  4.616692e+01      447
+1         image_01  9.660584e+00     6.377872e+00  6.091369e-01  4.616698e+01      447
+2         image_02  9.660614e+00     0.000000e+00  0.000000e+00  4.616684e+01      447
+3         image_03  9.660577e+00     5.473424e-01  6.646240e-02  4.616701e+01      447
+4             oxts  9.659563e+00     6.396858e+00  3.182116e+00  4.617186e+01      447
+5  velodyne_points -3.386375e-07     1.178562e+10  1.240293e+11 -1.317043e+09      447
+```
+
 #### The `test` and `train` Sets Do Not Contain The Same Data
 We computed the SHA-1 of all available files (and even the SHA-1 of the *decoded* images / velodyne scans)
 and verified there is zero overlap between `test` and `train`.
@@ -87,9 +144,23 @@ The Tracking Benchmark consists of a few particular Raw Data segments that were 
 +-----+-------------------------+-----------+------------------------------+---------+-------+--------------------+
 ```
 
-See the [main.ipynb](main.ipynb) Jupyter Notebook, which is the 
+#### The Object and Tracking Benchmarks Do Overlap
 
-See:
- *
+We find that about 18% of the train sets overlap, and about 20% of the test sets overlap:
+```
++---------+-----------+----+-------------+-----------+
+|obj_split|track_split|n   |frac_tracking|frac_object|
++---------+-----------+----+-------------+-----------+
+|null     |test       |7542|0.395        |0.0        |
+|null     |train      |4910|0.257        |0.0        |
+|test     |null       |3965|0.0          |0.264      |
+|test     |test       |3553|0.186        |0.237      |
+|train    |null       |4383|0.0          |0.292      |
+|train    |train      |3098|0.162        |0.207      |
++---------+-----------+----+-------------+-----------+
+```
 
+#### The Tracking Benchmark is a Subset of Available Tracklet Labels
+The KITTI Raw Data includes `tracklet.xml` labels for many drive segments.  We find there are about 17
+Raw Data segments that have `tracklet.xml` labels yet are absent from the Tracking Benchmark.
 
