@@ -35,7 +35,7 @@ exclusively from the publicly available Raw Sync Data.  For the `test` splits, w
     recorded on the same days.
 
 #### There Are Missing Velodyne Scans
-The Object Benchmark appear to have 100% Velodyne coverage, but the Tracking Benchmark is missing
+The Object Benchmark appears to have 100% Velodyne coverage, but the Tracking Benchmark is missing
 4 Velodyne scans.  Be sure you either drop these frames or make your training pipeline robust
 to missing data.  
 ```
